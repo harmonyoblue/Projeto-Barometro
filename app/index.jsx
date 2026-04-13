@@ -1,25 +1,37 @@
-import { useRouter } from "expo-router";
-import { Button, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Text  } from "react-native";
+import { useState } from "react";
+import { Barometer } from "expo-sensors";
 
-export default function Index() {
+export default function Barometro() {
+   const [{pressure, relativeAltitude}, setData] = useState({pressure: 0, relativeAltitude: 0});
+   const [leitor, setLeitor] = useState(null);
 
-  const roteador = useRouter();
+   const AtivarLeitor = () => {
+    leitor ? desligar() : ligar();
+   };
+
+   const ligar = () => {
+    setLeitor(Barometer.addListener(setData));
+   };
+
+   const desligar = () => {
+    leitor && leitor.remove();
+    setLeitor(null);
+   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Clique abaixo para consultar o barômetro</Text>
+    <SafeAreaView  style={{
+      justifyContent: 'center'
+    }
+    }>
+      <Text>Barometro yay </Text>
+      <Text>Sensor: {leitor ? 'ligado' : 'desligado'} </Text>
+      <Text>Pressão: {pressure} hPa</Text>
+      <Text>Altura: {relativeAltitude ?? "Indefinido"} </Text>
 
-      <Button
-        title="Consultar Barômetro"
-        onPress={() => roteador.push("./barometro")}
-      />
+      <Button title="Ligar / Desligar"onPress={AtivarLeitor}/>
 
-    </View>
+    </SafeAreaView>
   );
 }
